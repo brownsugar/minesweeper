@@ -12,8 +12,12 @@
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "@nuxtjs/eslint-config-typescript"
+    "@nuxtjs/eslint-config-typescript",
+    "plugin:vue/vue3-recommended"
   ],
   "rules": {
+    "vue/max-attributes-per-line": ["error", {
+      "singleline": 1
+    }]
   }
 }
