@@ -4,44 +4,77 @@ export const cols = ref(9)
 export const mines = ref(10)
 
 // Data
-export const mineStatus = ref<boolean[]>([])
-export const flagStatus = ref<boolean[]>([])
-export const revealStatus = ref<boolean[]>([])
-export const foundStatus = ref<number[]>([])
+const gridDataDefault = {
+  isMine: false,
+  flagged: false,
+  revealed: false,
+  adjacent: 0
+}
+type gridDataT = typeof gridDataDefault
+
+export const gridData = ref<gridDataT[]>([])
 
 const gridTotal = computed(() => rows.value * cols.value)
 
-export const initGame = (initialIndex: number) => {
-  let data = getInitArray()
-    .fill(true, 0, mines.value)
+export const initGame = () => {
+  gridData.value = Array<gridDataT>(gridTotal.value)
+    .fill(null)
+    .map(() => ({ ...gridDataDefault }))
+}
 
-  data = shuffleArray(data)
-  while (data[initialIndex]) {
-    data = shuffleArray(data)
+export const placeMines = (initialIndex: number) => {
+  const minesIndex = getMinesIndex(initialIndex)
+  gridData.value
+    .map((grid, i) => {
+      if (minesIndex.includes(i)) {
+        grid.isMine = true
+      }
+      return grid
+    })
+    .forEach((grid, index, array) => {
+      const found = seekSurrondingGrids(index, array)
+      grid.adjacent = found
+    })
+}
+
+const getMinesIndex = (initialIndex: number) => {
+  const result: number[] = []
+  while (result.length < mines.value) {
+    const index = getRandomNumber(0, gridTotal.value - 1)
+    if (index !== initialIndex && !result.includes(index)) {
+      result.push(index)
+    }
   }
-
-  mineStatus.value = data
+  return result
 }
 
-export const isComplete = () => {
-  const revealed = revealStatus.value.filter(value => value)
+const seekSurrondingGrids = (index: number, data: gridDataT[]) => {
+  const { row, col } = indexToCoord(index)
+  let found = 0
+  for (let i = row - 1; i <= row + 1; i++) {
+    if (i < 1 || i > rows.value) {
+      continue
+    }
+    for (let j = col - 1; j <= col + 1; j++) {
+      if (
+        j < 1 || j > cols.value ||
+        (i === row && j === col)
+      ) {
+        continue
+      }
+      const index = coordToIndex(i, j)
+      const isMine = data[index].isMine
+      if (isMine) {
+        found++
+      }
+    }
+  }
+  return found
+}
+
+export const isGameComplete = () => {
+  const revealed = gridData.value.filter(grid => grid.revealed)
   return revealed.length === gridTotal.value - mines.value
-}
-
-export const resetMineStatus = () => {
-  mineStatus.value = getInitArray()
-}
-
-export const resetFlagStatus = () => {
-  flagStatus.value = getInitArray()
-}
-
-export const resetRevealStatus = () => {
-  revealStatus.value = getInitArray()
-}
-
-export const resetFoundStatus = () => {
-  foundStatus.value = []
 }
 
 export const coordToIndex = (row: number, col: number) => {
@@ -55,15 +88,6 @@ export const indexToCoord = (index: number) => {
   }
 }
 
-const getInitArray = (filling = false) => {
-  return Array<boolean>(gridTotal.value).fill(filling)
-}
-
-const shuffleArray = (array: boolean[]) => {
-  const clonedArray = [...array]
-  for (let i = clonedArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [clonedArray[i], clonedArray[j]] = [clonedArray[j], clonedArray[i]]
-  }
-  return clonedArray
+const getRandomNumber = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }

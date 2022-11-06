@@ -2,12 +2,12 @@
   <div
     class="grid brick"
     :class="[
-      found === undefined ? '' : 'color-' + found,
+      grid.isMine ? '' : 'color-' + grid.adjacent,
       {
-        danger: isMine && revealed && activeIndex === index,
-        flat: revealed || (isMine && ended),
-        disabled: flagged || revealed || ended,
-        lighten: isMine && cheating && !revealed && !ended
+        danger: grid.isMine && grid.revealed && activeIndex === index,
+        flat: grid.revealed || (grid.isMine && ended),
+        disabled: grid.flagged || grid.revealed || ended,
+        lighten: grid.isMine && cheating && !grid.revealed && !ended
       }
     ]"
   >
@@ -16,14 +16,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  mineStatus,
-  flagStatus,
-  revealStatus,
-  foundStatus,
-  coordToIndex
-} from '~/composables/core'
-
 const props = defineProps({
   row: {
     type: Number,
@@ -52,22 +44,19 @@ const props = defineProps({
 })
 
 const index = computed(() => coordToIndex(props.row, props.col))
-const isMine = computed(() => mineStatus.value[index.value])
-const flagged = computed(() => flagStatus.value[index.value])
-const revealed = computed(() => revealStatus.value[index.value])
-const found = computed(() => foundStatus.value[index.value])
+const grid = computed(() => gridData.value[index.value])
 
 const content = computed(() => {
-  if (isMine.value && !props.wins) {
-    if (revealed.value || props.ended || props.cheating) {
+  if (grid.value.isMine && !props.wins) {
+    if (grid.value.revealed || props.ended || props.cheating) {
       return '💣'
     }
   }
-  if (flagged.value || (isMine.value && props.wins)) {
+  if (grid.value.flagged || (grid.value.isMine && props.wins)) {
     return '🚩'
   }
-  return revealed.value
-    ? found.value
+  return grid.value.revealed
+    ? grid.value.adjacent
     : ''
 })
 </script>

@@ -28,7 +28,7 @@
       >
         <TheGrid
           v-for="col in cols"
-          :key="col"
+          :key="row + '-' + col"
           :data-index="coordToIndex(row, col)"
           :row="row"
           :col="col"
@@ -52,21 +52,13 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  rows,
-  cols,
-  mines
-} from '~/composables/core'
-import {
-  seconds
-} from '~/composables/timer'
-import { emoji } from '~/composables/emoji'
-
 const started = ref(false)
 const ended = ref(false)
 const wins = ref(false)
 const cheating = ref(false)
 const activeIndex = ref(-1)
+
+initGame()
 
 const padZero = (num: number) => {
   if (num >= 0) {
@@ -75,7 +67,7 @@ const padZero = (num: number) => {
   return num.toString()
 }
 const minesForDisplay = computed(() => {
-  const flagged = flagStatus.value.filter(value => value)
+  const flagged = gridData.value.filter(grid => grid.flagged)
   return padZero(mines.value - flagged.length)
 })
 const secondsForDisplay = computed(() => {
@@ -88,7 +80,7 @@ const start = (initialIndex: number) => {
     return
   }
   started.value = true
-  initGame(initialIndex)
+  placeMines(initialIndex)
   timerTick()
 }
 const reset = () => {
@@ -98,10 +90,7 @@ const reset = () => {
   activeIndex.value = -1
   setEmoji('default')
   timerStop(true)
-  resetMineStatus()
-  resetFlagStatus()
-  resetRevealStatus()
-  resetFoundStatus()
+  initGame()
 }
 
 // Handlers
@@ -114,23 +103,18 @@ const clickHandler = (e: MouseEvent) => {
   const index = Number(target.dataset.index)
   activeIndex.value = index
   start(index)
-  const result = revealGrid(index)
-  if (result === null) {
-    return
-  }
-  const { isMine, isWin } = result
+  revealGrid(index)
+
+  const isMine = gridData.value[index].isMine
   if (isMine) {
     setEmoji('lose')
     timerStop()
     ended.value = true
-  } else {
-    seekSurrondingGrids(index)
-    if (isWin) {
-      wins.value = true
-      setEmoji('win')
-      timerStop()
-      ended.value = true
-    }
+  } else if (isGameComplete()) {
+    wins.value = true
+    setEmoji('win')
+    timerStop()
+    ended.value = true
   }
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {
