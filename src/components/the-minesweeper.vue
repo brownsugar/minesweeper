@@ -108,7 +108,7 @@ const reset = () => {
 const isGrid = (target: HTMLDivElement) => target.classList.contains('grid')
 const clickHandler = (e: MouseEvent) => {
   const target = e.target as HTMLDivElement
-  if (!isGrid(target)) {
+  if (!isGrid(target) || ended.value) {
     return
   }
   const index = Number(target.dataset.index)
@@ -135,7 +135,7 @@ const clickHandler = (e: MouseEvent) => {
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {
   const target = e.target as HTMLDivElement
-  if (!isGrid(target)) {
+  if (!isGrid(target) || ended.value) {
     return
   }
   if (down) {
@@ -146,7 +146,7 @@ const mouseEventHandler = (e: MouseEvent, down: boolean) => {
 }
 const contextmenuHandler = (e: MouseEvent) => {
   const target = e.target as HTMLDivElement
-  if (!isGrid(target)) {
+  if (!isGrid(target) || ended.value) {
     return
   }
   const index = Number(target.dataset.index)

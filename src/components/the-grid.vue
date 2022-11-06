@@ -2,7 +2,7 @@
   <div
     class="grid brick"
     :class="[
-      'color-' + found,
+      found === undefined ? '' : 'color-' + found,
       {
         danger: isMine && revealed && activeIndex === index,
         flat: revealed || (isMine && ended),
@@ -110,13 +110,13 @@ export default defineComponent({
       opacity: .5;
     }
   }
-  &.danger {
-    background: #E26868;
-    border: none;
-  }
   &.flat {
     background: var(--grid-background-flat);
     border-width: 1px;
+  }
+  &.danger {
+    background: #E26868;
+    border: none;
   }
   span {
     pointer-events: none;
