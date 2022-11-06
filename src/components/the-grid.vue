@@ -1,7 +1,11 @@
 <template>
   <button
     class="grid brick"
-    :disabled="flagged"
+    :class="{
+      danger: isMine && activeIndex === index,
+      flat: revealed || (isMine && ended)
+    }"
+    :disabled="flagged || revealed || ended"
   >
     {{ content }}
   </button>
@@ -23,6 +27,18 @@ const props = defineProps({
   col: {
     type: Number,
     required: true
+  },
+  activeIndex: {
+    type: Number,
+    default: -1
+  },
+  ended: {
+    type: Boolean,
+    default: false
+  },
+  cheating: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -33,7 +49,7 @@ const revealed = computed(() => revealStatus.value[index.value])
 
 const content = computed(() => {
   if (isMine.value) {
-    if (revealed.value) {
+    if (revealed.value || props.ended || props.cheating) {
       return '💣'
     }
   }
@@ -53,5 +69,13 @@ export default defineComponent({
 .grid {
   width: 30px;
   height: 30px;
+
+  &.danger {
+    background: #E26868;
+    border: none;
+  }
+  &.flat {
+    border: none;
+  }
 }
 </style>

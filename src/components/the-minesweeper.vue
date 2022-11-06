@@ -32,8 +32,20 @@
           :data-index="coordToIndex(row, col)"
           :row="row"
           :col="col"
+          :active-index="activeIndex"
+          :ended="ended"
+          :cheating="cheating"
         />
       </div>
+    </div>
+    <div class="footer">
+      <label>
+        <input
+          v-model="cheating"
+          type="checkbox"
+        >
+        Cheating
+      </label>
     </div>
   </div>
 </template>
@@ -50,6 +62,9 @@ import {
 import { emoji } from '~/composables/emoji'
 
 const started = ref(false)
+const ended = ref(false)
+const cheating = ref(false)
+const activeIndex = ref(-1)
 
 const padZero = (num: number) => {
   if (num >= 0) {
@@ -76,8 +91,10 @@ const start = (initialIndex: number) => {
 }
 const reset = () => {
   started.value = false
-  seconds.value = 0
-  timerStop()
+  ended.value = false
+  activeIndex.value = -1
+  setEmoji('default')
+  timerStop(true)
   resetFlagStatus()
   resetRevealStatus()
 }
@@ -90,8 +107,14 @@ const clickHandler = (e: MouseEvent) => {
     return
   }
   const index = Number(target.dataset.index)
+  activeIndex.value = index
   start(index)
-  revealGrid(index)
+  const isMine = revealGrid(index)
+  if (isMine) {
+    setEmoji('lose')
+    timerStop()
+    ended.value = true
+  }
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {
   const target = e.target as HTMLDivElement
@@ -177,5 +200,9 @@ $border-radius: 5px;
       border-bottom-right-radius: $border-radius;
     }
   }
+}
+.footer {
+  margin-top: 10px;
+  color: #FFF;
 }
 </style>

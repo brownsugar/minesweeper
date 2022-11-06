@@ -10,6 +10,9 @@ export const timerTick = () => {
   }, 1000)
 }
 
-export const timerStop = () => {
+export const timerStop = (reset = false) => {
   clearTimeout(timer.value)
+  if (reset) {
+    seconds.value = 0
+  }
 }

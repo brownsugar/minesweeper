@@ -20,8 +20,6 @@ export const initGame = (initialIndex: number) => {
   }
 
   mineStatus.value = data
-  resetFlagStatus()
-  resetRevealStatus()
 }
 
 export const resetFlagStatus = () => {

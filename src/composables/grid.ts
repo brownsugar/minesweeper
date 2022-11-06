@@ -1,4 +1,4 @@
-import { flagStatus, revealStatus } from './core'
+import { mineStatus, flagStatus, revealStatus } from './core'
 
 export const flagGrid = (index: number, value: boolean = undefined) => {
   if (revealStatus.value[index]) {
@@ -15,4 +15,5 @@ export const revealGrid = (index: number) => {
     return
   }
   revealStatus.value[index] = true
+  return mineStatus.value[index]
 }
