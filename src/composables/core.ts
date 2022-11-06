@@ -93,7 +93,9 @@ const countAdjacent = (index: number) => {
 const revealAdjacent = (index: number) => {
   seekAdjacentGrids(index, (grid, i) => {
     if (!grid.isMine && !grid.revealed) {
-      grid.revealed = true
+      if (!grid.flagged) {
+        grid.revealed = true
+      }
       if (grid.adjacent === 0) {
         revealAdjacent(i)
       }

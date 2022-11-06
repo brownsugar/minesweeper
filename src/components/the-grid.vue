@@ -2,7 +2,7 @@
   <div
     class="grid brick"
     :class="[
-      grid.isMine ? '' : 'color-' + grid.adjacent,
+      'color-' + grid.adjacent,
       {
         danger: grid.isMine && grid.revealed && activeIndex === index,
         flat: grid.revealed || (grid.isMine && ended),
@@ -56,7 +56,7 @@ const content = computed(() => {
     return '🚩'
   }
   return grid.value.revealed
-    ? grid.value.adjacent
+    ? grid.value.adjacent || ''
     : ''
 })
 </script>
@@ -73,9 +73,6 @@ export default defineComponent({
   font-weight: 900;
 
   &.color- {
-    &0 {
-      color: transparent;
-    }
     &1 {
       color: #185ADB;
     }
