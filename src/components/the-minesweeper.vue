@@ -19,6 +19,8 @@
       @click="clickHandler"
       @mousedown="mouseEventHandler($event, true)"
       @mouseup="mouseEventHandler($event, false)"
+      @touchstart="touchEventHandler($event, true)"
+      @touchend="touchEventHandler($event, false)"
       @contextmenu.prevent="contextmenuHandler"
     >
       <div
@@ -119,6 +121,13 @@ const clickHandler = (e: MouseEvent) => {
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {
   const target = e.target as HTMLDivElement
+  similarMouseEventHandler(target, down)
+}
+const touchEventHandler = (e: TouchEvent, down: boolean) => {
+  const target = e.target as HTMLDivElement
+  similarMouseEventHandler(target, down)
+}
+const similarMouseEventHandler = (target: HTMLDivElement, down: boolean) => {
   if (!isGrid(target) || ended.value) {
     return
   }
