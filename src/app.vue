@@ -42,7 +42,10 @@ useHead({
       property: 'og:title',
       content: title
     },
-    { property: 'og:type', content: 'website' },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
     {
       property: 'og:locale',
       content: 'en'
@@ -54,6 +57,10 @@ useHead({
     {
       property: 'og:description',
       content: description
+    },
+    {
+      property: 'og:image',
+      content: url + '/thumb.png'
     }
   ]
 })

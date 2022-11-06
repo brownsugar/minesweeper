@@ -2,6 +2,8 @@
 
 Make the classic game with Vue 3 & TypeScript.
 
+![Banner](src/public/thumb.png)
+
 ## Setup
 
 Make sure to install the dependencies:
