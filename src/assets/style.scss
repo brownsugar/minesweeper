@@ -5,3 +5,34 @@ body {
   font-family: 'Roboto', sans-serif;
   background: #F7F7F7;
 }
+.brick {
+  $base: #F5EDDC;
+  $base-alt: darken($base, 15%);
+  $lighten: lighten($base, 5%);
+  $darken: darken($base, 25%);
+
+  --grid-background: linear-gradient(135deg, #{$base}, #{$base-alt});
+  --grid-border-light: #{$lighten};
+  --grid-border-dark: #{$darken};
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--grid-background);
+  color: #333;
+  border: 3px solid;
+  border-top-color: var(--grid-border-light);
+  border-right-color: var(--grid-border-dark);
+  border-bottom-color: var(--grid-border-dark);
+  border-left-color: var(--grid-border-light);
+  cursor: pointer;
+  user-select: none;
+
+  &:not([disabled]):active {
+    --grid-border-light: #{$darken};
+    --grid-border-dark: #{$lighten};
+  }
+  &[disabled] {
+    cursor: default;
+  }
+}

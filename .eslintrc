@@ -18,6 +18,9 @@
   "rules": {
     "vue/max-attributes-per-line": ["error", {
       "singleline": 1
-    }]
+    }],
+    // Use TypeScript based rules
+    "func-call-spacing": "off",
+    "@typescript-eslint/func-call-spacing": "warn"
   }
 }

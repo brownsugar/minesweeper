@@ -4,50 +4,118 @@
       <div class="counter">
         {{ minesForDisplay }}
       </div>
-      <div class="emoji brick">
-        🙂
+      <div
+        class="emoji brick"
+        @click="reset"
+      >
+        {{ emoji }}
       </div>
       <div class="timer">
         {{ secondsForDisplay }}
       </div>
     </div>
-    <div class="grids">
+    <div
+      class="grids"
+      @click="clickHandler"
+      @mousedown="mouseEventHandler($event, true)"
+      @mouseup="mouseEventHandler($event, false)"
+      @contextmenu.prevent="contextmenuHandler"
+    >
       <div
         v-for="row in rows"
         :key="row"
         class="row"
       >
-        <div
+        <TheGrid
           v-for="col in cols"
           :key="col"
-          class="grid brick"
-        >
-          X
-        </div>
+          :data-index="coordToIndex(row, col)"
+          :row="row"
+          :col="col"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const rows = 9
-const cols = 9
-const mines = ref(10)
-const seconds = ref(29)
+import {
+  rows,
+  cols,
+  mines
+} from '~/composables/core'
+import {
+  seconds
+} from '~/composables/timer'
+import { emoji } from '~/composables/emoji'
 
-const padZero = (num: number) => num.toString().padStart(3, '0')
+const started = ref(false)
 
+const padZero = (num: number) => {
+  if (num >= 0) {
+    return num.toString().padStart(3, '0')
+  }
+  return num.toString()
+}
 const minesForDisplay = computed(() => {
-  return padZero(mines.value)
+  const flagged = flagStatus.value.filter(value => value)
+  return padZero(mines.value - flagged.length)
 })
 const secondsForDisplay = computed(() => {
   return padZero(seconds.value)
 })
 
-// 🙂
-// 😮
-// 😎
-// 😵
+// Status
+const start = (initialIndex: number) => {
+  if (started.value) {
+    return
+  }
+  started.value = true
+  initGame(initialIndex)
+  timerTick()
+}
+const reset = () => {
+  started.value = false
+  seconds.value = 0
+  timerStop()
+  resetFlagStatus()
+  resetRevealStatus()
+}
+
+// Handlers
+const isGrid = (target: HTMLDivElement) => target.classList.contains('grid')
+const clickHandler = (e: MouseEvent) => {
+  const target = e.target as HTMLDivElement
+  if (!isGrid(target)) {
+    return
+  }
+  const index = Number(target.dataset.index)
+  start(index)
+  revealGrid(index)
+}
+const mouseEventHandler = (e: MouseEvent, down: boolean) => {
+  const target = e.target as HTMLDivElement
+  if (!isGrid(target)) {
+    return
+  }
+  if (down) {
+    setEmoji('active')
+  } else {
+    setEmoji('default')
+  }
+}
+const contextmenuHandler = (e: MouseEvent) => {
+  const target = e.target as HTMLDivElement
+  if (!isGrid(target)) {
+    return
+  }
+  const index = Number(target.dataset.index)
+  flagGrid(index)
+}
+
+onBeforeUnmount(() => {
+  timerStop()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -108,36 +176,6 @@ $border-radius: 5px;
     .grid:last-child {
       border-bottom-right-radius: $border-radius;
     }
-  }
-}
-.grid {
-  width: 30px;
-  height: 30px;
-}
-.brick {
-  $base: #F5EDDC;
-  $base-alt: darken($base, 15%);
-  $lighten: lighten($base, 5%);
-  $darken: darken($base, 25%);
-
-  --grid-background: linear-gradient(135deg, #{$base}, #{$base-alt});
-  --grid-border-light: #{$lighten};
-  --grid-border-dark: #{$darken};
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--grid-background);
-  border: 3px solid;
-  border-top-color: var(--grid-border-light);
-  border-right-color: var(--grid-border-dark);
-  border-bottom-color: var(--grid-border-dark);
-  border-left-color: var(--grid-border-light);
-  cursor: pointer;
-
-  &:active {
-    --grid-border-light: #{$darken};
-    --grid-border-dark: #{$lighten};
   }
 }
 </style>
