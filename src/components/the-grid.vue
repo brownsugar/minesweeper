@@ -4,7 +4,7 @@
     :class="[
       'color-' + grid.adjacent,
       {
-        danger: grid.isMine && grid.revealed && activeIndex === index,
+        danger: grid.isMine && grid.revealed && highlightsIndex.includes(index),
         flat: grid.revealed || (grid.isMine && ended),
         disabled: grid.flagged || grid.revealed || ended,
         lighten: grid.isMine && cheating && !grid.revealed && !ended
@@ -25,9 +25,9 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  activeIndex: {
-    type: Number,
-    default: -1
+  highlightsIndex: {
+    type: Array,
+    default: () => []
   },
   ended: {
     type: Boolean,

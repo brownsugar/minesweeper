@@ -17,6 +17,7 @@
     <div
       class="grids"
       @click="clickHandler"
+      @dblclick="dblClickHandler"
       @mousedown="mouseEventHandler($event, true)"
       @mouseup="mouseEventHandler($event, false)"
       @touchstart="touchEventHandler($event, true)"
@@ -34,7 +35,7 @@
           :data-index="coordToIndex(row, col)"
           :row="row"
           :col="col"
-          :active-index="activeIndex"
+          :highlights-index="highlightsIndex"
           :ended="ended"
           :wins="wins"
           :cheating="cheating"
@@ -58,7 +59,7 @@ const started = ref(false)
 const ended = ref(false)
 const wins = ref(false)
 const cheating = ref(false)
-const activeIndex = ref(-1)
+const highlightsIndex = ref<number[]>([])
 
 initGame()
 
@@ -85,38 +86,52 @@ const start = (initialIndex: number) => {
   placeMines(initialIndex)
   timerTick()
 }
+const over = (win = false) => {
+  wins.value = win
+  setEmoji(win ? 'win' : 'lose')
+  timerStop()
+  ended.value = true
+}
 const reset = () => {
   started.value = false
   ended.value = false
   wins.value = false
-  activeIndex.value = -1
+  highlightsIndex.value = []
   setEmoji('default')
   timerStop(true)
   initGame()
 }
 
 // Handlers
-const isGrid = (target: HTMLDivElement) => target.classList.contains('grid')
+const isGrid = (target: HTMLDivElement) =>
+  target.classList.contains('grid')
 const clickHandler = (e: MouseEvent) => {
   const target = e.target as HTMLDivElement
   if (!isGrid(target) || ended.value) {
     return
   }
   const index = Number(target.dataset.index)
-  activeIndex.value = index
+  highlightsIndex.value.push(index)
   start(index)
   revealGrid(index)
 
   const isMine = gridData.value[index].isMine
   if (isMine) {
-    setEmoji('lose')
-    timerStop()
-    ended.value = true
+    over()
   } else if (isGameComplete()) {
-    wins.value = true
-    setEmoji('win')
-    timerStop()
-    ended.value = true
+    over(true)
+  }
+}
+const dblClickHandler = (e: MouseEvent) => {
+  const target = e.target as HTMLDivElement
+  if (!isGrid(target) || ended.value) {
+    return
+  }
+  const index = Number(target.dataset.index)
+  const minesIndex = revealRemainingGrid(index)
+  if (minesIndex.length) {
+    highlightsIndex.value = minesIndex
+    over()
   }
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {

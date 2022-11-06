@@ -36,6 +36,29 @@ export const revealGrid = (index: number) => {
     revealAdjacent(index)
   }
 }
+export const revealRemainingGrid = (index: number) => {
+  const grid = gridData.value[index]
+  const minesIndex: number[] = []
+  if (grid.flagged || !grid.revealed || grid.adjacent === 0) {
+    return minesIndex
+  }
+  const gridsIndex: number[] = []
+  let flagged = 0
+  seekAdjacentGrids(index, (grid, i) => {
+    if (grid.flagged) {
+      flagged++
+    } else if (!grid.revealed) {
+      gridsIndex.push(i)
+      if (grid.isMine) {
+        minesIndex.push(i)
+      }
+    }
+  })
+  if (flagged === grid.adjacent) {
+    gridsIndex.forEach(revealGrid)
+  }
+  return minesIndex
+}
 
 // Game
 export const initGame = () => {
