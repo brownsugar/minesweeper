@@ -11,7 +11,7 @@ export const flagGrid = (index: number, value: boolean = undefined) => {
   flagStatus.value[index] = value
 }
 export const revealGrid = (index: number) => {
-  if (flagStatus.value[index]) {
+  if (flagStatus.value[index] || revealStatus.value[index]) {
     return
   }
   revealStatus.value[index] = true

@@ -1,14 +1,14 @@
 <template>
-  <button
+  <div
     class="grid brick"
     :class="{
-      danger: isMine && activeIndex === index,
-      flat: revealed || (isMine && ended)
+      danger: isMine && revealed && activeIndex === index,
+      flat: revealed || (isMine && ended),
+      disabled: flagged || revealed || ended
     }"
-    :disabled="flagged || revealed || ended"
   >
     {{ content }}
-  </button>
+  </div>
 </template>
 
 <script lang="ts" setup>

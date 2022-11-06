@@ -28,11 +28,11 @@ body {
   cursor: pointer;
   user-select: none;
 
-  &:not([disabled]):active {
+  &:not(.disabled):active {
     --grid-border-light: #{$darken};
     --grid-border-dark: #{$lighten};
   }
-  &[disabled] {
+  &.disabled {
     cursor: default;
   }
 }
