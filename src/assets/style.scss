@@ -8,10 +8,12 @@ body {
 .brick {
   $base: #F5EDDC;
   $base-alt: darken($base, 15%);
+  $base-flat: darken($base, 5%);
   $lighten: lighten($base, 5%);
   $darken: darken($base, 25%);
 
   --grid-background: linear-gradient(135deg, #{$base}, #{$base-alt});
+  --grid-background-flat: #{$base-flat};
   --grid-border-light: #{$lighten};
   --grid-border-dark: #{$darken};
 

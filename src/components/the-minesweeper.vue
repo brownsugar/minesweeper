@@ -34,6 +34,7 @@
           :col="col"
           :active-index="activeIndex"
           :ended="ended"
+          :wins="wins"
           :cheating="cheating"
         />
       </div>
@@ -63,6 +64,7 @@ import { emoji } from '~/composables/emoji'
 
 const started = ref(false)
 const ended = ref(false)
+const wins = ref(false)
 const cheating = ref(false)
 const activeIndex = ref(-1)
 
@@ -92,11 +94,14 @@ const start = (initialIndex: number) => {
 const reset = () => {
   started.value = false
   ended.value = false
+  wins.value = false
   activeIndex.value = -1
   setEmoji('default')
   timerStop(true)
+  resetMineStatus()
   resetFlagStatus()
   resetRevealStatus()
+  resetFoundStatus()
 }
 
 // Handlers
@@ -109,11 +114,23 @@ const clickHandler = (e: MouseEvent) => {
   const index = Number(target.dataset.index)
   activeIndex.value = index
   start(index)
-  const isMine = revealGrid(index)
+  const result = revealGrid(index)
+  if (result === null) {
+    return
+  }
+  const { isMine, isWin } = result
   if (isMine) {
     setEmoji('lose')
     timerStop()
     ended.value = true
+  } else {
+    seekSurrondingGrids(index)
+    if (isWin) {
+      wins.value = true
+      setEmoji('win')
+      timerStop()
+      ended.value = true
+    }
   }
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {

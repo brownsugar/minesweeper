@@ -7,6 +7,7 @@ export const mines = ref(10)
 export const mineStatus = ref<boolean[]>([])
 export const flagStatus = ref<boolean[]>([])
 export const revealStatus = ref<boolean[]>([])
+export const foundStatus = ref<number[]>([])
 
 const gridTotal = computed(() => rows.value * cols.value)
 
@@ -22,6 +23,15 @@ export const initGame = (initialIndex: number) => {
   mineStatus.value = data
 }
 
+export const isComplete = () => {
+  const revealed = revealStatus.value.filter(value => value)
+  return revealed.length === gridTotal.value - mines.value
+}
+
+export const resetMineStatus = () => {
+  mineStatus.value = getInitArray()
+}
+
 export const resetFlagStatus = () => {
   flagStatus.value = getInitArray()
 }
@@ -30,12 +40,23 @@ export const resetRevealStatus = () => {
   revealStatus.value = getInitArray()
 }
 
+export const resetFoundStatus = () => {
+  foundStatus.value = []
+}
+
 export const coordToIndex = (row: number, col: number) => {
   return (row - 1) * cols.value + col - 1
 }
 
-const getInitArray = () => {
-  return Array<boolean>(gridTotal.value).fill(false)
+export const indexToCoord = (index: number) => {
+  return {
+    row: Math.floor(index / cols.value) + 1,
+    col: (index % cols.value) + 1
+  }
+}
+
+const getInitArray = (filling = false) => {
+  return Array<boolean>(gridTotal.value).fill(filling)
 }
 
 const shuffleArray = (array: boolean[]) => {
