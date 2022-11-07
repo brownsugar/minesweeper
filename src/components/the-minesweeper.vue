@@ -132,6 +132,8 @@ const dblClickHandler = (e: MouseEvent) => {
   if (minesIndex.length) {
     highlightsIndex.value = minesIndex
     over()
+  } else if (isGameComplete()) {
+    over(true)
   }
 }
 const mouseEventHandler = (e: MouseEvent, down: boolean) => {
