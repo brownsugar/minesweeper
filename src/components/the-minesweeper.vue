@@ -113,7 +113,11 @@ const clickHandler = (e: MouseEvent) => {
   const index = Number(target.dataset.index)
   highlightsIndex.value.push(index)
   start(index)
-  revealGrid(index)
+
+  const revealed = revealGrid(index)
+  if (!revealed) {
+    return
+  }
 
   const isMine = gridData.value[index].isMine
   if (isMine) {

@@ -29,12 +29,13 @@ export const flagGrid = (index: number, value: boolean = undefined) => {
 export const revealGrid = (index: number) => {
   const grid = gridData.value[index]
   if (grid.flagged || grid.revealed) {
-    return
+    return false
   }
   grid.revealed = true
   if (!grid.isMine && grid.adjacent === 0) {
     revealAdjacent(index)
   }
+  return true
 }
 export const revealRemainingGrid = (index: number) => {
   const grid = gridData.value[index]
