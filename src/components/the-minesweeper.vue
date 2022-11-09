@@ -129,7 +129,7 @@ const dblClickHandler = (e: MouseEvent) => {
   }
   const index = Number(target.dataset.index)
   const minesIndex = revealRemainingGrid(index)
-  if (minesIndex.length) {
+  if (minesIndex && minesIndex.length) {
     highlightsIndex.value = minesIndex
     over()
   } else if (isGameComplete()) {

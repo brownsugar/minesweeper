@@ -38,11 +38,11 @@ export const revealGrid = (index: number) => {
 }
 export const revealRemainingGrid = (index: number) => {
   const grid = gridData.value[index]
-  const minesIndex: number[] = []
   if (grid.flagged || !grid.revealed || grid.adjacent === 0) {
-    return minesIndex
+    return null
   }
   const gridsIndex: number[] = []
+  const minesIndex: number[] = []
   let flagged = 0
   seekAdjacentGrids(index, (grid, i) => {
     if (grid.flagged) {
@@ -56,8 +56,9 @@ export const revealRemainingGrid = (index: number) => {
   })
   if (flagged === grid.adjacent) {
     gridsIndex.forEach(revealGrid)
+    return minesIndex
   }
-  return minesIndex
+  return null
 }
 
 // Game
